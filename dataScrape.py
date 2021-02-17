@@ -6,6 +6,7 @@ GENERALWEBSITE = "https://www.basketball-reference.com/"
 ALPHABET = ["a/", "b/", "c/", "d/", "e/", "f/", "g/", "h/", "i/", "j", "k/", "l/", "m/", "n/", "o/", "p/", "q/", "r/", "s/", "t/", "u/", "v/", "w/", "x/", "y/", "z/"]
 FILTERATTRIBUTE = "data-stat"
 MINYEARPAIR = "year_min"
+MAXYEARPAIR = "year_max"
 PLAYERPAIR = "player"
 POSITIONPAIR = "pos"
 CAREERSTATSVAL = "Career"
@@ -17,10 +18,9 @@ def soupify(soupify_link):
     webpage = BeautifulSoup(webpage_request.content, "html.parser")
     return webpage
 
-#takes in a webpage that has a bunch of links to players in a table
-#returns a list of player webpages who played after a specified year and play a certain position
+
 #will add more parameters later
-def filter(row, min_year, excludedPos):
+def filter(row, min_year, excludedPos, min_range):
     add_to_list = True
     for col in row.children: #while loop is more efficient, change later
             #FILTERATTRIBUTE is an attribute in every column so do not need to check if it an attribute of the column
@@ -28,17 +28,21 @@ def filter(row, min_year, excludedPos):
             position = col.string
         elif(col[FILTERATTRIBUTE] == MINYEARPAIR):
             player_start_year = int(col.string)
-    if (position in excludedPos or player_start_year < min_year):
+        elif(col[FILTERATTRIBUTE] == MAXYEARPAIR):
+            player_end_year = int(col.string)
+    if (position in excludedPos or player_start_year < min_year or (player_end_year - player_start_year) >= min_range):
         add_to_list = False
     return add_to_list
 
-
-def filter_players(link, min_year, position):
+#takes in a webpage that has a bunch of links to players in a table
+#returns a list of player webpages who played after a specified year and play a certain position
+#default values are if filter not wanted
+def filter_players(link, min_year = 0, position = "", min_range = 0):
     filtered_years = []
     alphabet_webpage = soupify(link)
     table_body = alphabet_webpage.find("tbody")
     for row in table_body.find_all('tr'):
-        if(filter(row, min_year, position)):
+        if(filter(row, min_year, position, min_range)):
             filtered_years.append(row.find("a")["href"]) #hardcoded
     return filtered_years
 
