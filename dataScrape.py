@@ -1,9 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 
-PLAYERWEBSITE = "https://www.basketball-reference.com/players/"
-GENERALWEBSITE = "https://www.basketball-reference.com/"
-ALPHABET = ["a/", "b/", "c/", "d/", "e/", "f/", "g/", "h/", "i/", "j", "k/", "l/", "m/", "n/", "o/", "p/", "q/", "r/", "s/", "t/", "u/", "v/", "w/", "x/", "y/", "z/"]
+
 FILTERATTRIBUTE = "data-stat"
 MINYEARPAIR = "year_min"
 MAXYEARPAIR = "year_max"
@@ -30,8 +28,10 @@ def filter(row, min_year, excludedPos, min_range):
             player_start_year = int(col.string)
         elif(col[FILTERATTRIBUTE] == MAXYEARPAIR):
             player_end_year = int(col.string)
-    if (position in excludedPos or player_start_year < min_year or (player_end_year - player_start_year) >= min_range):
+    if (excludedPos in position or player_start_year < min_year or (player_end_year - player_start_year) <= min_range):
         add_to_list = False
+
+
     return add_to_list
 
 #takes in a webpage that has a bunch of links to players in a table
@@ -44,6 +44,7 @@ def filter_players(link, min_year = 0, position = "", min_range = 0):
     for row in table_body.find_all('tr'):
         if(filter(row, min_year, position, min_range)):
             filtered_years.append(row.find("a")["href"]) #hardcoded
+            print(row.find("a").string)
     return filtered_years
 
 

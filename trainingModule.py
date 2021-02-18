@@ -1,6 +1,7 @@
 import numpy as np
 
 # functions are for single variable linear regression
+# is returning multiple values best practice?
 def normalize(max, min, val):
     return(val-min)/(max-min)
 
@@ -23,7 +24,7 @@ def gradient(listx, listy, weight, bias):
     bGradient = 0
     length = len(listy)
     predictions = predict(listx, listy, weight, bias)
-    
+
     for i in range(length):
         error = predictions[i] - listy[i]
         weightGradient += 2 * error * listx[i]
