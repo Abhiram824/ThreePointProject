@@ -7,15 +7,14 @@ def normalize(max, min, val):
     return(val-min)/(max-min)
 
 def predict(listx, weight, bias):
-    predictions = [i * weight for i in listx]
-    predictions = (i + bias for i in predictions)
+    predictions = [(i * weight) + bias for i in listx]
     return predictions
 
 def cost(predictedVals, realVals):
     cost = 0
     length = len(predictedVals)
     for i in range(length):
-        cost += (realVals[i] - predictedVals[i]) ** 2
+        cost += ((realVals[i] - predictedVals[i]) ** 2)
     return cost/length
 
 
@@ -38,8 +37,8 @@ def gradient(listx, listy, weight, bias):
 def train(listx, listy, weight, bias, learningRate, epochs):
     for i in range(epochs):
         weightGradient, bGradient = gradient(listx, listy, weight, bias)
-        weight += weightGradient * learningRate
-        bias += bGradient * learningRate
+        weight -= weightGradient * learningRate
+        bias -= bGradient * learningRate
     return weight, bias
 
 def divide(inputVals, outputVals, ratio):
@@ -55,3 +54,14 @@ def divide(inputVals, outputVals, ratio):
     
 
     return inputVals, outputVals, testInputs, testOutputs
+
+def list_average(list_of_vals):
+    average = 0
+    length = len(list_of_vals)
+    for i in range(length):
+        average += list_of_vals[i]
+    return average/length
+
+
+
+            
