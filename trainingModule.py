@@ -2,11 +2,12 @@ import numpy as np
 
 # functions are for single variable linear regression
 # is returning multiple values best practice?
+#Using linear regression for r^2 or should I switch to logistic?
 def normalize(max, min, val):
     return(val-min)/(max-min)
 
-def predict(listx, listy, weight, bias):
-    predictions = np.dot(listx, weight)
+def predict(listx, weight, bias):
+    predictions = [i * weight for i in listx]
     predictions = (i + bias for i in predictions)
     return predictions
 
@@ -23,7 +24,7 @@ def gradient(listx, listy, weight, bias):
     weightGradient = 0
     bGradient = 0
     length = len(listy)
-    predictions = predict(listx, listy, weight, bias)
+    predictions = predict(listx, weight, bias)
 
     for i in range(length):
         error = predictions[i] - listy[i]
@@ -34,20 +35,23 @@ def gradient(listx, listy, weight, bias):
 
     return weightGradient, bGradient
 
-def updateVals(weight, bias, weightGradient, bGradient, learningRate):
-    weight += weightGradient * learningRate
-    bias += bGradient * learningRate
+def train(listx, listy, weight, bias, learningRate, epochs):
+    for i in range(epochs):
+        weightGradient, bGradient = gradient(listx, listy, weight, bias)
+        weight += weightGradient * learningRate
+        bias += bGradient * learningRate
     return weight, bias
 
 def divide(inputVals, outputVals, ratio):
-    #changing inputVals and outputVals to the training data list
+    #not sure how to return less because python pass by reference is weird
     length = len(inputVals)
-    divide = ratio * length
+    divide = int (ratio * length)
 
     testInputs = [inputVals[i] for i in range(divide, length, 1)]
     testOutputs = [outputVals[i] for i in range(divide, length, 1)]
 
     inputVals = [inputVals[i] for i in range(divide)]
     outputVals = [outputVals[i] for i in range(divide)]
+    
 
-    return testInputs, testOutputs
+    return inputVals, outputVals, testInputs, testOutputs

@@ -44,7 +44,7 @@ def filter_players(link, min_year = 0, position = "", min_range = 0):
     for row in table_body.find_all('tr'):
         if(filter(row, min_year, position, min_range)):
             filtered_years.append(row.find("a")["href"]) #hardcoded
-            print(row.find("a").string)
+
     return filtered_years
 
 
