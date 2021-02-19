@@ -57,7 +57,7 @@ def extract_stats(link, stats):
     table_foot = stats_page.find("tfoot") #hardcoded make a generalized method to unhardcode this stuff
     row_data = table_foot.find("tr")
     for col in row_data:
-        if(col[FILTERATTRIBUTE] in stats):
+        if(col[FILTERATTRIBUTE] in stats and col.string is not None):
             exact_stats.append(float(col.string))
 
     return exact_stats

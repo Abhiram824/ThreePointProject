@@ -25,15 +25,19 @@ length = len(ALPHABET)
 for i in range(length):
     list_of_links.append(ds.filter_players(PLAYERWEBSITE + ALPHABET[i] , MINYEAR, EXCLUDEDPOS, MINYEARSPLAYED))
     
-training_input_vals = []
-training_output_vals = []
+total_input_vals = []
+total_output_vals = []
+stats = [THREEPTATTRIBUTE, FREETHROWATTRIBUTE]
+stats_length = len(stats)
 
 for links in list_of_links:
     for link in links:
-        training_input_vals.append(ds.extract_stats(GENERALWEBSITE + link, [THREEPTATTRIBUTE, FREETHROWATTRIBUTE])[FREETHROWINDEX])
-        training_output_vals.append(ds.extract_stats(GENERALWEBSITE + link, [THREEPTATTRIBUTE, FREETHROWATTRIBUTE])[THREEPTINDEX])
+        extracted_stats = ds.extract_stats(GENERALWEBSITE + link, stats)
+        if len(extracted_stats) == stats_length:
+            total_input_vals.append(extracted_stats[FREETHROWINDEX])
+            total_output_vals.append(extracted_stats[THREEPTINDEX])
 
-training_input_vals, training_output_vals, test_inputs, test_outputs = tm.divide(training_input_vals, training_output_vals, DIVIDE)
+training_input_vals, training_output_vals, test_inputs, test_outputs = tm.divide(total_input_vals, total_output_vals, DIVIDE)
 
 weight = INITIALIZER
 bias = INITIALIZER
@@ -43,14 +47,16 @@ predicted_vals = tm.predict(test_inputs, weight, bias)
 cost = tm.cost(predicted_vals, test_outputs)
 
 
-r_squared = tm.r_squared(predicted_vals, test_outputs)
+r_squared = tm.r_squared(total_input_vals, total_output_vals)
 
 print(predicted_vals, test_outputs, weight, bias)
 print(r_squared, COSTMULTIPLIER * cost)
-
-
-plt.plot(predicted_vals, predicted_vals)
+print("very disappointing r^2 value as it is rather low, showing a weak correlation. I will look into results again, but it looks like free throw percentage is not the best indicator of three point percentage")
+print("the graph also shows a lackluster correlation.")
+plt.plot(test_inputs, predicted_vals)
 plt.scatter(test_inputs, test_outputs)
 
 plt.show()
+#results show an r^2 of about.28 which show a low correlation, but the plot shows otherwise, so I will double check my results
+#looks like my gradient descent for linear regression was not perfect. May have to switch algorithms
 
